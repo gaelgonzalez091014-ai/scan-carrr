@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCAN CAR | Mantenimiento</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body class="app-layout">
+
+    <aside class="menu-lateral">
+        <a class="marca-logo" href="index.html">SCAN<span>CAR</span></a>
+        <p class="menu-titulo">MENÚ PRINCIPAL</p>
+        <nav class="navegacion">
+            <a href="index.html">⌂ &nbsp; Inicio</a>
+            <a href="vehiculo.html"> &nbsp; Mis vehículos</a>
+            <a href="diagnostico.html">◉ &nbsp; Nuevo diagnóstico</a>
+            <a href="historial.html">▤ &nbsp; Historial</a>
+            <a class="activo" href="mantenimiento.html"> &nbsp; Mantenimiento</a>
+        </nav>
+        <div class="menu-inferior">
+            <p>SCAN CAR v1.0</p>
+            <button class="enlace-menu" id="cerrarSesion">↪ Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido-app">
+        <header class="encabezado-panel">
+            <div>
+                <p class="texto-secundario">PREVENCIÓN AUTOMOTRIZ</p>
+                <h1>Mantenimiento preventivo</h1>
+                <p class="texto-secundario">Lleva un control de las revisiones de tu vehículo.</p>
+            </div>
+            <div class="avatar-usuario" id="avatar">U</div>
+        </header>
+
+        <section class="bienvenida-panel">
+            <div>
+                <p class="etiqueta-azul">LISTA DE VERIFICACIÓN</p>
+                <h2>Cuida tu vehículo antes de que falle.</h2>
+                <p>Marca los componentes que ya revisaste. Tus cambios quedarán guardados en este navegador.</p>
+            </div>
+            <div class="imagen-auto">🛠️</div>
+        </section>
+
+        <section class="tarjeta-mantenimiento">
+            <div class="fila-titulo">
+                <h2>Lista de mantenimiento</h2>
+                <span class="contador" id="contador">0 de 6 revisados</span>
+            </div>
+
+            <div class="barra-progreso">
+                <div id="progreso"></div>
+            </div>
+
+            <div id="listaMantenimiento"></div>
+
+            <div class="acciones-mantenimiento">
+                <button class="boton-azul" id="guardar">Guardar revisiones</button>
+                <button class="boton-secundario" id="reiniciar">Restablecer lista</button>
+            </div>
+
+            <p class="texto-secundario nota-mantenimiento">
+                Esta lista es orientativa. Sigue el manual del fabricante y acude a un mecánico
+                para revisiones técnicas.
+            </p>
+        </section>
+
+        <footer class="pie-app">
+            SCAN CAR © 2026 · Mantenimiento preventivo
+        </footer>
+    </main>
+
+    <script>
+        const nombre = localStorage.getItem("scanCarNombre");
+
+        if (!nombre) {
+            window.location.href = "index.html?acceso=1";
+        }
+
+        document.getElementById("avatar").textContent =
+            (nombre || "U").charAt(0).toUpperCase();
+
+        const tareasIniciales = [
+            { id: "aceite", nombre: "Nivel y estado del aceite", detalle: "Comprobar según el manual del vehículo." },
+            { id: "frenos", nombre: "Frenos", detalle: "Prestar atención a ruidos o cambios al frenar." },
+            { id: "bateria", nombre: "Batería", detalle: "Revisar su estado y conexiones visibles." },
+            { id: "llantas", nombre: "Llantas y presión", detalle: "Comprobar presión y desgaste." },
+            { id: "luces", nombre: "Luces y señales", detalle: "Verificar faros, direccionales y luces traseras." },
+            { id: "refrigerante", nombre: "Sistema de refrigeración", detalle: "Revisar el nivel en frío y buscar fugas visibles." }
+        ];
+
+        const clave = "scanCarMantenimiento";
+        let tareasGuardadas = JSON.parse(localStorage.getItem(clave) || "null");
+
+        if (!Array.isArray(tareasGuardadas) ||
+            !tareasGuardadas.every(t => tareasIniciales.some(i => i.id === t.id))) {
+            tareasGuardadas = tareasIniciales.map(t => ({
+                ...t,
+                completado: false,
+                fecha: ""
+            }));
+        } else {
+            tareasGuardadas = tareasIniciales.map(t => {
+                const anterior = tareasGuardadas.find(item => item.id === t.id);
+                return {
+                    ...t,
+                    completado: anterior ? Boolean(anterior.completado) : false,
+                    fecha: anterior ? (anterior.fecha || "") : ""
+                };
+            });
+        }
+
+        const lista = document.getElementById("listaMantenimiento");
+
+        function dibujarLista() {
+            lista.innerHTML = "";
+
+            tareasGuardadas.forEach(tarea => {
+                const fila = document.createElement("label");
+                fila.className = "fila-mantenimiento";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = tarea.completado;
+                checkbox.addEventListener("change", () => {
+                    tarea.completado = checkbox.checked;
+                    tarea.fecha = checkbox.checked
+                        ? new Date().toLocaleDateString("es-MX")
+                        : "";
+                    actualizarProgreso();
+                });
+
+                const contenido = document.createElement("span");
+                contenido.className = "contenido-tarea";
+
+                const titulo = document.createElement("strong");
+                titulo.textContent = tarea.nombre;
+
+                const detalle = document.createElement("small");
+                detalle.textContent = tarea.detalle;
+
+                const estado = document.createElement("small");
+                estado.className = "fecha-tarea";
+                estado.textContent = tarea.completado
+                    ? "Revisado: " + tarea.fecha
+                    : "Pendiente de revisión";
+
+                contenido.append(titulo, detalle, estado);
+                fila.append(checkbox, contenido);
+                lista.appendChild(fila);
+            });
+
+            actualizarProgreso();
+        }
+
+        function actualizarProgreso() {
+            const total = tareasGuardadas.length;
+            const hechas = tareasGuardadas.filter(t => t.completado).length;
+
+            document.getElementById("contador").textContent =
+                `${hechas} de ${total} revisados`;
+
+            document.getElementById("progreso").style.width =
+                (total ? hechas / total * 100 : 0) + "%";
+        }
+
+        document.getElementById("guardar").addEventListener("click", () => {
+            localStorage.setItem(clave, JSON.stringify(tareasGuardadas));
+            alert("Las revisiones se guardaron correctamente.");
+        });
+
+        document.getElementById("reiniciar").addEventListener("click", () => {
+            if (!confirm("¿Quieres marcar todas las tareas como pendientes?")) return;
+
+            tareasGuardadas = tareasIniciales.map(t => ({
+                ...t,
+                completado: false,
+                fecha: ""
+            }));
+
+            localStorage.setItem(clave, JSON.stringify(tareasGuardadas));
+            dibujarLista();
+        });
+
+        document.getElementById("cerrarSesion").addEventListener("click", () => {
+            localStorage.removeItem("scanCarNombre");
+            window.location.href = "index.html?acceso=1";
+        });
+
+        dibujarLista();
+    </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCAN CAR | Historial</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body class="app-layout">
+
+    <aside class="menu-lateral">
+        <a class="marca-logo" href="index.html">SCAN<span>CAR</span></a>
+        <p class="menu-titulo">MENÚ PRINCIPAL</p>
+        <nav class="navegacion">
+            <a href="index.html">⌂ &nbsp; Inicio</a>
+            <a href="vehiculo.html"> &nbsp; Mis vehículos</a>
+            <a href="diagnostico.html">◉ &nbsp; Nuevo diagnóstico</a>
+            <a class="activo" href="historial.html">▤ &nbsp; Historial</a>
+            <a href="mantenimiento.html"> &nbsp; Mantenimiento</a>
+        </nav>
+        <div class="menu-inferior">
+            <p>SCAN CAR v1.0</p>
+            <button class="enlace-menu" id="cerrarSesion">↪ Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="contenido-app">
+        <header class="encabezado-panel">
+            <div>
+                <p class="texto-secundario">REGISTRO DEL SISTEMA</p>
+                <h1>Historial de diagnósticos</h1>
+                <p class="texto-secundario">Consulta el último reporte disponible.</p>
+            </div>
+            <div class="avatar-usuario" id="avatar">U</div>
+        </header>
+
+        <section class="tarjeta-mantenimiento" id="reporte">
+            <h2>Último diagnóstico</h2>
+            <p class="texto-secundario">Todavía no hay un diagnóstico guardado.</p>
+            <a href="diagnostico.html" class="boton-azul">Crear diagnóstico</a>
+        </section>
+
+        <footer class="pie-app">
+            SCAN CAR © 2026 · Historial de revisión
+        </footer>
+    </main>
+
+    <script>
+        const nombre = localStorage.getItem("scanCarNombre");
+
+        if (!nombre) {
+            window.location.href = "index.html?acceso=1";
+        }
+
+        document.getElementById("avatar").textContent =
+            (nombre || "U").charAt(0).toUpperCase();
+
+        const reporte = JSON.parse(
+            localStorage.getItem("diagnostico") || "null"
+        );
+
+        const vehiculo = JSON.parse(
+            localStorage.getItem("vehiculo") || "null"
+        );
+
+        const contenedor = document.getElementById("reporte");
+
+        if (reporte) {
+            contenedor.replaceChildren();
+
+            const titulo = document.createElement("h2");
+            titulo.textContent = "Último diagnóstico guardado";
+
+            const fecha = document.createElement("p");
+            fecha.className = "texto-secundario";
+            fecha.textContent = "Consulta registrada en este navegador.";
+
+            const auto = document.createElement("p");
+            auto.textContent = vehiculo
+                ? `Vehículo: ${vehiculo.marca} ${vehiculo.modelo} ${vehiculo.anio}`
+                : "Vehículo: no disponible";
+
+            const sonido = document.createElement("p");
+            sonido.textContent = "Tipo de sonido: " +
+                (reporte.sonido || reporte.tipoSonido || "No especificado");
+
+            const enlace = document.createElement("a");
+            enlace.href = "resultado.html";
+            enlace.className = "boton-azul";
+            enlace.textContent = "Ver reporte completo";
+
+            contenedor.append(titulo, fecha, auto, sonido, enlace);
+        }
+
+        document.getElementById("cerrarSesion").addEventListener("click", () => {
+            localStorage.removeItem("scanCarNombre");
+            window.location.href = "index.html?acceso=1";
+        });
+    </script>
+</body>
+</html>

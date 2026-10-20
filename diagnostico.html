@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCAN CAR - Diagnóstico</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<nav>
+    <h2> SCAN CAR</h2>
+    <a href="index.html">Inicio</a>
+    <a href="vehiculo.html">Vehículo</a>
+    <a href="diagnostico.html">Diagnóstico</a>
+    <a href="resultado.html">Resultados</a>
+</nav>
+
+<main class="contenedor">
+    <h1>Análisis de sonido</h1>
+    <div class="tarjeta">
+        <label>Grabar o seleccionar un audio</label>
+        <input type="file" id="audio" accept="audio/*">
+        <audio id="reproductor" controls hidden></audio>
+
+        <label>Tipo de sonido</label>
+        <select id="sonido">
+            <option value="">Selecciona un sonido</option>
+            <option value="normal">Sonido normal</option>
+            <option value="golpeteo">Golpeteo metálico</option>
+            <option value="chillido">Chillido</option>
+            <option value="vibracion">Vibración irregular</option>
+            <option value="arranque">Problema al arrancar</option>
+        </select>
+
+        <button onclick="analizar()">Generar diagnóstico</button>
+        <p id="mensaje"></p>
+    </div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

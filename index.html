@@ -1,0 +1,418 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123b66">
+<link rel="manifest" href="./manifest.json">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCAN CAR | Panel principal</title>
+    <link rel="stylesheet" href="estilos.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            color: #1e293b;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 35px #00000015;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 8px;
+        }
+
+        .login-card p {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 9px;
+            margin: 15px 0;
+            font-size: 16px;
+        }
+
+        button, .btn {
+            display: inline-block;
+            border: none;
+            border-radius: 9px;
+            padding: 12px 18px;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover, .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .login-card button {
+            width: 100%;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 245px;
+            flex-shrink: 0;
+            background: #0f172a;
+            color: white;
+            padding: 25px 15px;
+        }
+
+        .sidebar h2 {
+            margin: 0 0 8px;
+            color: #60a5fa;
+        }
+
+        .sidebar p {
+            color: #cbd5e1;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #e2e8f0;
+            text-decoration: none;
+            padding: 13px;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #1e293b;
+            color: #60a5fa;
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .welcome {
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .logout {
+            background: #dc2626;
+        }
+
+        .logout:hover {
+            background: #b91c1c;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1d4ed8, #0f172a);
+            color: white;
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+        }
+
+        .hero h2 {
+            font-size: 28px;
+            margin-top: 0;
+        }
+
+        .hero p {
+            line-height: 1.6;
+            max-width: 650px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px #00000008;
+        }
+
+        .card .emoji {
+            font-size: 30px;
+        }
+
+        .card h3 {
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: #64748b;
+            line-height: 1.5;
+            min-height: 45px;
+        }
+
+        .card a {
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #64748b;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            .app {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .sidebar p {
+                margin-bottom: 15px;
+            }
+
+            .main {
+                padding: 18px;
+            }
+
+            .topbar h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="contenido"></div>
+
+    <script>
+        // No redirigir la página automáticamente.
+        // Si no existe un nombre guardado, mostrar el formulario.
+        const contenido = document.getElementById("contenido");
+        const nombreGuardado = localStorage.getItem("scanCarNombre");
+
+        function mostrarLogin() {
+            contenido.innerHTML = `
+                <main class="login-container">
+                    <section class="login-card">
+                        <div class="logo"> SCAN CAR</div>
+                        <h2>Bienvenido</h2>
+                        <p>Ingresa tu nombre para acceder al sistema de diagnóstico automotriz.</p>
+
+                        <form id="formLogin">
+                            <input
+                                type="text"
+                                id="nombre"
+                                placeholder="Escribe tu nombre"
+                                autocomplete="name"
+                                required
+                                maxlength="60"
+                            >
+                            <button type="submit">Entrar al sistema</button>
+                        </form>
+                    </section>
+                </main>
+            `;
+
+            const formulario = document.getElementById("formLogin");
+            const campoNombre = document.getElementById("nombre");
+
+            formulario.addEventListener("submit", function(evento) {
+                evento.preventDefault();
+
+                const nombre = campoNombre.value.trim();
+
+                if (nombre.length === 0) {
+                    campoNombre.focus();
+                    return;
+                }
+
+                localStorage.setItem("scanCarNombre", nombre);
+
+                // Mostrar el panel directamente, sin redirecciones.
+                mostrarPanel(nombre);
+            });
+
+            campoNombre.focus();
+        }
+
+        function mostrarPanel(nombre) {
+            contenido.innerHTML = `
+                <div class="app">
+                    <aside class="sidebar">
+                        <h2> SCAN CAR</h2>
+                        <p>Sistema de diagnóstico automotriz</p>
+
+                        <a href="index.html" class="active"> Inicio</a>
+                        <a href="vehiculo.html"> Seleccionar vehículo</a>
+                        <a href="diagnostico.html"> Nuevo diagnóstico</a>
+                        <a href="resultado.html"> Resultados</a>
+                        <a href="historial.html"> Historial</a>
+                        <a href="mantenimiento.html"> Mantenimiento</a>
+                    </aside>
+
+                    <main class="main">
+                        <header class="topbar">
+                            <div>
+                                <h1>Panel principal</h1>
+                                <p class="welcome">
+                                    ¡Hola, ${escaparHTML(nombre)}! Bienvenido a SCAN CAR.
+                                </p>
+                            </div>
+
+                            <button type="button" class="logout" id="cerrarSesion">
+                                Cerrar sesión
+                            </button>
+                        </header>
+
+                        <section class="hero">
+                            <h2>Tu vehículo, en buenas manos</h2>
+                            <p>
+                                SCAN CAR te permite registrar tu vehículo, consultar
+                                diagnósticos de demostración y revisar recomendaciones
+                                básicas para el mantenimiento de tu automóvil.
+                            </p>
+                            <a href="vehiculo.html" class="btn">Comenzar</a>
+                        </section>
+
+                        <section class="cards">
+                            <article class="card">
+                                <div class="emoji"></div>
+                                <h3>Mi vehículo</h3>
+                                <p>Selecciona la marca, modelo y datos de tu automóvil.</p>
+                                <a href="vehiculo.html" class="btn">Seleccionar</a>
+                            </article>
+
+                            <article class="card">
+                                <div class="emoji"></div>
+                                <h3>Diagnóstico</h3>
+                                <p>Registra un sonido para consultar el resultado de demostración.</p>
+                                <a href="diagnostico.html" class="btn">Diagnosticar</a>
+                            </article>
+
+                            <article class="card">
+                                <div class="emoji"></div>
+                                <h3>Resultados</h3>
+                                <p>Consulta el último reporte de diagnóstico guardado.</p>
+                                <a href="resultado.html" class="btn">Ver resultados</a>
+                            </article>
+
+                            <article class="card">
+                                <div class="emoji"></div>
+                                <h3>Historial</h3>
+                                <p>Revisa el último diagnóstico almacenado en el navegador.</p>
+                                <a href="historial.html" class="btn">Ver historial</a>
+                            </article>
+
+                            <article class="card">
+                                <div class="emoji"></div>
+                                <h3>Mantenimiento</h3>
+                                <p>Marca las tareas básicas de mantenimiento que hayas revisado.</p>
+                                <a href="mantenimiento.html" class="btn">Abrir checklist</a>
+                            </article>
+                        </section>
+
+                        <div class="footer">
+                            SCAN CAR · Prototipo de diagnóstico automotriz
+                        </div>
+                    </main>
+                </div>
+            `;
+
+            document.getElementById("cerrarSesion").addEventListener("click", function() {
+                localStorage.removeItem("scanCarNombre");
+                // Mostrar el formulario sin recargar ni redirigir.
+                mostrarLogin();
+            });
+        }
+
+        function escaparHTML(texto) {
+            return texto.replace(/[&<>"']/g, function(caracter) {
+                const entidades = {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;"
+                };
+
+                return entidades[caracter];
+            });
+        }
+
+        // Elegir una sola vista al cargar la página.
+        if (nombreGuardado && nombreGuardado.trim() !== "") {
+            mostrarPanel(nombreGuardado);
+        } else {
+            mostrarLogin();
+        }
+    </script>
+    
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js")
+        .then(() => console.log("SCAN CAR: servicio registrado"))
+        .catch((error) => console.error("Error PWA:", error));
+    });
+  }
+</script>
+
+</body>
+</html>
